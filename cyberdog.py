@@ -6,12 +6,13 @@ from phew import server, template, logging, access_point, dns
 from phew.template import render_template
 from phew.server import redirect
 import gc
-gc.threshold(50000)
+gc.threshold(50000) # setup garbage collection
 
-DOMAIN = "pico.wireless"
+DOMAIN = "pico.wireless" # This is the address that is shown on the Captive Portal
 
 @server.route("/", methods=['GET','POST'])
 def index(request):
+    """ Render the Index page and respond to form requests """
     if request.method == 'GET':
         logging.debug("Get request")
         return render_template("index.html")
@@ -30,17 +31,19 @@ def wrong_host_redirect(request):
 
 @server.route("/hotspot-detect.html", methods=["GET"])
 def hotspot(request):
+    """ Redirect to the Index Page """
     return render_template("index.html")
 
 @server.catchall()
 def catch_all(request):
+    """ Catch and redirect requests """
     if request.headers.get("host") != DOMAIN:
         return redirect("http://" + DOMAIN + "/wrong-host-redirect")
 
 # Set to Accesspoint mode
-ap = access_point("Wifi In The Woods")
-ip = ap.ifconfig()[0]
+ap = access_point("Wifi In The Woods")  # Change this to whatever Wifi SSID you wish
+ip = ap.ifconfig()[0]                   # Grab the IP address and store it
 logging.info(f"starting DNS server on {ip}")
-dns.run_catchall(ip)
-server.run()
+dns.run_catchall(ip)                    # Catch all requests and reroute them
+server.run()                            # Run the server
 logging.info("Webserver Started")
