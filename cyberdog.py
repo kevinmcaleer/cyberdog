@@ -2,8 +2,8 @@
 # Kevin McAleer
 # September 2022
 
-from phew import server, template, logging, access_point, dns
-from phew.template import render_template
+from phew import logging, template, server, access_point, dns
+from phew.template import  render_template
 from phew.server import redirect
 import gc
 gc.threshold(50000) # setup garbage collection
