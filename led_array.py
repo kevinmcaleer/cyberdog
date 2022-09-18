@@ -125,6 +125,7 @@ class Led_array:
         self.offset += len(character[0]) + self.gap
        
     def display_character(self, character,x_pos, scale=2):
+        # Scale is only in the Y Axis (height)
         font_height = 5
         r,g,b = self.hsv2rgb(self.hue, self.saturation, self.brightness)
 
@@ -139,20 +140,19 @@ class Led_array:
 
                 #  set the x and y position of the pixel to light up
                 x = current_col + self.offset + x_pos
-                y = current_row 
+                y = current_row * scale
 
                 # clear previously lit pixel
                 if x +1 < self.columns and x +1 > -1:
-                    self.set_pixel_rgb(x+1, y, 0, 0, 0)
-                
+                    for s in range(scale):
+                        self.set_pixel_rgb(x+1, y+s, 0, 0, 0)
+                        
                 # write the new pixel
                 if x < self.columns and x > -1:
                     actual_row = (current_row // scale) 
                     print(f'actual_row: {actual_row}, x: {x}, y: {y}, current_row: {current_row}, current_col: {current_col}, pixel: {character[actual_row][current_col]}')
-                    if character[actual_row][current_col] == '1':
-                        self.set_pixel_rgb(x, y, r, g, b)
-                    else:
-                        self.set_pixel_rgb(x, y, 0, 0, 0)
+                    
+                    # if the pixel is lit in the character array, then draw it
                     if character[actual_row][current_col] == '1':
                         self.set_pixel_rgb(x, y, r, g, b)    # Draw the pixel
                     else:
